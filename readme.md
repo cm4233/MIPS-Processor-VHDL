@@ -19,4 +19,5 @@ The implemented MIPS Processor was tested by running RC5 encryption and decrypti
 * Simulation Output on Xilinx ISE/ModelSim
 ![Image of simout](https://github.com/cm4233/MIPS-Processor-VHDL/blob/master/Outputs/simulation%20output-rc5%20encrypt.png?raw=true)
 * FPGA Output on Nexys4DDR development board with Artix-7 FPGA
+
 ![Image of fpgaout](https://github.com/cm4233/MIPS-Processor-VHDL/blob/master/Outputs/onboard%20output-rc5%20encrypt.png?raw=true)
