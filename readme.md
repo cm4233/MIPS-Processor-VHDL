@@ -1,4 +1,4 @@
-# MIPS Processor - NYU EL-6463
+# MIPS Processor
 This project describes an implementation of a 32-bit MIPS processor for Artix-7 FPGA using VHDL. The implemented MIPS processor is tested by running RC5 encryption and decryption algorithms.
 ## Description of the included files
 * **NYU6463Processor.vhd** *Is the top module for the entire project which implements the MIPS processor for Artix-7 FPGA.*
