@@ -1,2 +1,2 @@
 Attached images are simulation tests to find the maximum operating frequency of the MIPS Processor. This is done by checking for simulation errors at different operating frequencies.
-The analysis shows that it takes roughly 5000 clock cycles for the processor to execute one block RC5 encryption. This overhead is significant when compared to 90 clock cycles taken for RC5 encryption when directly implemented on FPGA.
+The analysis shows that it takes roughly 7000 clock cycles for the processor to execute one block RC5 encryption. This overhead is significant when compared to 90 clock cycles taken for RC5 encryption when directly implemented on FPGA.
