@@ -1,5 +1,5 @@
 # MIPS Processor using VHDL
-This project describes an implementation of a 32-bit MIPS processor for Artix-7 FPGA using VHDL. The implemented MIPS processor is tested by running RC5 encryption and decryption algorithms.
+This project describes an implementation of a 32-bit MIPS processor for Artix-7 FPGA using a hardware description language (VHDL). The implemented MIPS processor is tested by running RC5 encryption and decryption algorithms. The project highlights the advantage of FPGA based hardware acceleration to significantly reduce execution time. It takes about 7000 clock cycles to perform RC5 Encryption when executed on the general purpose MIPS processor as opposed to just 90 clock cycles when the algorithm is directly implemented on the FPGA.  
 ## Description of the included files
 * **NYU6463Processor.vhd** *Is the top module for the entire project which implements the MIPS processor for Artix-7 FPGA.*
 * **MIPSProcessor.vhd** *Is the MIPS processor's VHDL code which has the following components (below).*
