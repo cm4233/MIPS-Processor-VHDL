@@ -7,17 +7,19 @@ USE ieee.std_logic_arith.all;
 entity datamemory is
 ---------//ports//--------------------------------------
 PORT (
-ukey: in STD_LOGIC_VECTOR(127 DOWNTO 0);
-din: in STD_LOGIC_VECTOR(63 DOWNTO 0);
-A: in STD_LOGIC_VECTOR(31 DOWNTO 0);
-WD: in STD_LOGIC_VECTOR(31 DOWNTO 0);
-WE: in STD_LOGIC; 
+ukey: in STD_LOGIC_VECTOR(127 DOWNTO 0);--a way to write ukey into dmem from fpga for our test program
+din: in STD_LOGIC_VECTOR(63 DOWNTO 0);--a way to write data into dmem from fpga for our test program
+A: in STD_LOGIC_VECTOR(31 DOWNTO 0);--addr port
+WD: in STD_LOGIC_VECTOR(31 DOWNTO 0);-- the data to be written in a location specified by addr A
+WE: in STD_LOGIC;-- write enable 
 clk: in STD_LOGIC; 	   
 		
-RD: out STD_LOGIC_VECTOR(31 DOWNTO 0);
+RD: out STD_LOGIC_VECTOR(31 DOWNTO 0);--data read from a location specified by addr A
 
-dmem_00h: out STD_LOGIC_VECTOR(31 DOWNTO 0);
-dmem_01h: out STD_LOGIC_VECTOR(31 DOWNTO 0);
+	
+----------//Additional Test signals//------------------------------------------------------------
+dmem_00h: out STD_LOGIC_VECTOR(31 DOWNTO 0);--Probing a few dmem locations directly to the FPGA board
+dmem_01h: out STD_LOGIC_VECTOR(31 DOWNTO 0);--just for testing purposes
 dmem_02h: out STD_LOGIC_VECTOR(31 DOWNTO 0);
 dmem_03h: out STD_LOGIC_VECTOR(31 DOWNTO 0);
 dmem_04h: out STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -32,15 +34,17 @@ dmem_0Ch: out STD_LOGIC_VECTOR(31 DOWNTO 0);
 dmem_0Dh: out STD_LOGIC_VECTOR(31 DOWNTO 0);
 dmem_0Eh: out STD_LOGIC_VECTOR(31 DOWNTO 0);
 dmem_0Fh: out STD_LOGIC_VECTOR(31 DOWNTO 0));
--------------------
+-------------------------------------------------------------------------------------------------------------
 -----------------------------------------------
 end datamemory;
 
 architecture Behavioral of datamemory is
 --------//signals//------------------------
+--dmem is RAM 64x32. 64 locations each 32bit wide
 TYPE ram IS ARRAY (0 TO 63) OF STD_LOGIC_VECTOR(31 DOWNTO 0);
 SIGNAL dmem: 
 ram:=ram'(
+--storing some initial data needed for our test programs-rc5 encryption and decryption
 ---------skeys-----------------
 "10110111111000010101000101100011", --Pw
 "01010110000110001100101100011100", --Pw+ Qw
@@ -69,8 +73,8 @@ ram:=ram'(
 "10001101000101001011101010111011", --Pw+ 2Qw
 "00101011010011000011010001110100", --Pw+ 25Qw?
 -------------din--------------------
-x"00000000",
-x"00000000",
+x"00000000",--using these dmem locations to store user's data to be 
+x"00000000",--encrypted/decrypted in our test program
 -----------------------------------
 x"00000000", 
 x"00000000",
@@ -129,8 +133,10 @@ dmem(33)<=din(31 downto 0);
 end if;
 end process;
 
-dmem_00h<=dmem(0);
-dmem_01h<=dmem(1);
+
+----//Additional Test signals//-------
+dmem_00h<=dmem(0);--Probing a few dmem locations directly to the FPGA board
+dmem_01h<=dmem(1);--just for testing purpose
 dmem_02h<=dmem(2);
 dmem_03h<=dmem(3);
 dmem_04h<=dmem(4);
