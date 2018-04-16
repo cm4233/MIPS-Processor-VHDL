@@ -6,9 +6,10 @@ USE IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity controlunit is
 ---------//ports//---------
 PORT (
-Op: in STD_LOGIC_VECTOR(5 DOWNTO 0);
+Op: in STD_LOGIC_VECTOR(5 DOWNTO 0);--The opcode from the current instruction
 Funct: in STD_LOGIC_VECTOR(5 DOWNTO 0);
-
+--Control signals branching from the CU go into different muxes inside the processor
+--which select specific data paths depending on the instruction
 Jump:	out STD_LOGIC;
 MemtoReg: out STD_LOGIC;
 MemWrite: out STD_LOGIC;
