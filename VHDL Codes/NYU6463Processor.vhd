@@ -1,14 +1,15 @@
---VHDL Code for implementing the MIPS Processor on Artix 7 FPGA and using the on board 7 segment display of Nexys4DDR--
+--Top Module
+--VHDL Code for implementing the MIPS Processor on Artix 7 FPGA --
+--The ucf file is used for interfacing the board's switches, buttons and 7seg display to the fpga
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity NYU6463Processor is
 PORT (	sw: in STD_LOGIC_VECTOR(15 DOWNTO 0);
-		   clk,btnc,btnu,btnl: in STD_LOGIC;
-
-			SSEG_CA 	: out  STD_LOGIC_VECTOR (7 downto 0);
-         SSEG_AN 	: out  STD_LOGIC_VECTOR (7 downto 0)); 
+clk,btnc,btnu,btnl: in STD_LOGIC;
+SSEG_CA : out  STD_LOGIC_VECTOR (7 downto 0);
+SSEG_AN : out  STD_LOGIC_VECTOR (7 downto 0)); 
 end NYU6463Processor;
 
 architecture Behavioral of NYU6463Processor is
@@ -31,22 +32,22 @@ signal clrSignal: STD_LOGIC;
 signal dinSignal: STD_LOGIC_VECTOR(63 DOWNTO 0);
 signal ukeySignal: STD_LOGIC_VECTOR(127 DOWNTO 0);
 signal EorDSignal: STD_LOGIC:='0';
-signal Reg1Signal: STD_LOGIC_VECTOR(31 DOWNTO 0);
-signal Reg2Signal: STD_LOGIC_VECTOR(31 DOWNTO 0);
+signal Reg1Signal: STD_LOGIC_VECTOR(31 DOWNTO 0);--Gets displayed on 7seg
+signal Reg2Signal: STD_LOGIC_VECTOR(31 DOWNTO 0);--Gets displayed on 7seg
 -------------------
-----7seg display-----
-component Hex2LED 
+----7seg display signals-----
+component Hex2LED --Converts a 4 bit hex value into the pattern to be displayed on the 7seg
 port (CLK: in STD_LOGIC; X: in STD_LOGIC_VECTOR (3 downto 0); Y: out STD_LOGIC_VECTOR (7 downto 0)); 
 end component; 
+
 type arr is array(0 to 22) of std_logic_vector(7 downto 0);
 signal NAME: arr;
-constant CNTR_MAX : std_logic_vector(23 downto 0) := x"030D40"; --100,000,000 = clk cycles per second
-constant VAL_MAX : std_logic_vector(3 downto 0) := "1001"; --9
-constant RESET_CNTR_MAX : std_logic_vector(17 downto 0) := "110000110101000000";-- 100,000,000 * 0.002 = 200,000 = clk cycles per 2 ms
-signal Cntr : std_logic_vector(26 downto 0) := (others => '0');
 signal Val : std_logic_vector(3 downto 0) := (others => '0');
-signal clk_cntr_reg : std_logic_vector (4 downto 0) := (others=>'0'); 
-----end of 7seg display---
+signal HexVal: std_logic_vector(31 downto 0);
+signal slowCLK: std_logic:='0';
+signal i_cnt: std_logic_vector(19 downto 0):=x"00000";
+----end of 7seg display signals---
+
 begin
 ----//code//-------
 with sw(0) select
@@ -62,37 +63,39 @@ if(rising_edge(clkSignal))then
 clk50mhzSignal<=not clk50mhzSignal;
 end if;
 end process;
---dinSignal<=x"B278C165CC97D184";
+--dinSignal<=x"B278C165CC97D184";--Simple Test
 --ukeySignal<=x"DC49DB1375A5584F6485B413B5F12BAF";
 MIPS: MIPSProcessor PORT MAP(clk50mhzSignal,clrSignal,dinSignal,ukeySignal,EorDSignal,Reg1Signal,Reg2Signal);
 -------end code------------
-------7 seg display-----
-timer_counter_process : process (CLK)
+
+------7 seg display code-----
+-----Creating a slowCLK of 500Hz using the board's 100MHz clock----
+process(CLK)
 begin
-	if (rising_edge(CLK)) then
-		if ((Cntr = CNTR_MAX) or (btnc = '1')) then
-			Cntr <= (others => '0');
-		else
-			Cntr <= Cntr + 1;
-		end if;
-	end if;
+if (rising_edge(CLK)) then
+if (i_cnt=x"186A0")then --Hex(186A0)=Dec(100,000)
+slowCLK<=not slowCLK; --slowCLK toggles once after we see 100000 rising edges of CLK. 2 toggles is one period.
+i_cnt<=x"00000";
+else
+i_cnt<=i_cnt+'1';
+end if;
+end if;
 end process;
 
-timer_inc_process : process (CLK)
+-----We use the 500Hz slowCLK to run our 7seg display at roughly 60Hz-----
+timer_inc_process : process (slowCLK)
 begin
-	if (rising_edge(CLK)) then
-		if (btnc = '1') then
-			Val <= (others => '0');
-		elsif (Cntr = CNTR_MAX) then
-			if (Val = VAL_MAX) then
-				Val <= (others => '0');
-			else
-				Val <= Val + 1;
+	if (rising_edge(slowCLK)) then
+				if(Val="1000") then
+				Val<="0001";
+				else
+				Val <= Val + '1'; --Val runs from 1,2,3,...8 on every rising edge of slowCLK
 			end if;
 		end if;
-	end if;
+	--end if;
 end process;
 
+--This select statement selects one of the 7-segment diplay anode(active low) at a time. 
 with Val select
 	SSEG_AN <= "01111111" when "0001",
 				  "10111111" when "0010",
@@ -106,7 +109,7 @@ with Val select
 
 process(sw,btnu,btnl)
 begin
------------------------ukey-------------------------------------------------
+----Using buttons and switches to accept 128 bit ukey from user-------------------------------------------------
 if(btnu='1' and btnl='0' and sw(7)='1' and sw(6 downto 3)="0000") then
 ukeySignal(127 downto 120) <= sw(15 downto 8); 
 end if;
@@ -155,7 +158,7 @@ end if;
 if(btnu='1' and btnl='0' and sw(7)='1' and sw(6 downto 3)="1111") then
 ukeySignal(7 downto 0) <= sw(15 downto 8); 
 end if;
----------------------din-----------------------------------------------
+----Using buttons and switches to accept a 64bit data from user-----------------------------------------------
 if(btnu='1' and btnl='0' and sw(7)='0' and sw(6 downto 3)="0000") then
 dinSignal(63 downto 56) <= sw(15 downto 8); 
 end if;
@@ -181,6 +184,7 @@ if(btnu='1' and btnl='0' and sw(7)='0' and sw(6 downto 3)="0111") then
 dinSignal(7 downto 0) <= sw(15 downto 8); 
 end if;
 ------------------------------------------------------------------------
+--Using sw(2) switch on the fpga board to select between displaying Reg1Signal or Reg2Signal
 if(sw(2)='1') then
 case Val is
 	 when "0001"=>SSEG_CA <= NAME(0); 
@@ -193,16 +197,7 @@ case Val is
 	 when "1000"=> SSEG_CA <= NAME(7);
 	 when others=>SSEG_CA <= NAME(0);
     end case;	
---with Val select
---	SSEG_CA <= NAME(0) when "0001",
---				  NAME(1) when "0010",
---				  NAME(2) when "0011",
---				  NAME(3) when "0100",
---				  NAME(4) when "0101",
---				  NAME(5) when "0110",
---				  NAME(6) when "0111",
---				  NAME(7) when "1000",
---				  NAME(0) when others;
+
 else
 case Val is
 	 when "0001"=>SSEG_CA <= NAME(8); 
@@ -219,9 +214,9 @@ case Val is
 end if;
 end process;
 
-CONV1: Hex2LED port map (CLK => CLK, X => Reg1Signal(31 downto 28), Y => NAME(0));
-CONV2: Hex2LED port map (CLK => CLK, X => Reg1Signal(27 downto 24), Y => NAME(1));
-CONV3: Hex2LED port map (CLK => CLK, X => Reg1Signal(23 downto 20), Y => NAME(2));
+CONV1: Hex2LED port map (CLK => CLK, X => Reg1Signal(31 downto 28), Y => NAME(0));--Converting Reg1Signal's content into a 7seg display
+CONV2: Hex2LED port map (CLK => CLK, X => Reg1Signal(27 downto 24), Y => NAME(1));--pattern so that we can visually display it on
+CONV3: Hex2LED port map (CLK => CLK, X => Reg1Signal(23 downto 20), Y => NAME(2));--the 7segment display of the fpga board
 CONV4: Hex2LED port map (CLK => CLK, X => Reg1Signal(19 downto 16), Y => NAME(3));		
 CONV5: Hex2LED port map (CLK => CLK, X => Reg1Signal(15 downto 12), Y => NAME(4));
 CONV6: Hex2LED port map (CLK => CLK, X => Reg1Signal(11 downto 8), Y => NAME(5));
