@@ -15,7 +15,7 @@ architecture Behavioral of instructionmemory is
 TYPE rom IS ARRAY (0 TO 220) OF STD_LOGIC_VECTOR(31 DOWNTO 0); 
 CONSTANT imem: 
 rom:=rom'(
----------Instruction memory loaded with RC5 encrytion and decryption code------
+---------Instruction memory loaded with our test RC5 encrytion and decryption code------
 -----------ENCRYPT SKEY GEN-----------------------------
 -------------UKEY FROM MEM---------------
 "00011100000110010000000000100010",--LW R25,34(R0) i0
@@ -253,10 +253,11 @@ rom:=rom'(
 "00000000010001000001000000010001", --SUB R2 R2 R4
 "00101000000000001111111111111111"); --BEQ R0 R0 -1 infinite loop
 -------end of decryption----------------------
---------------------------------------
+-------------------------------------------------------------------------------
 begin
----------//code//-------------------
-data<=imem(CONV_INTEGER(address));
-------------------------------------
+---------//code//--------------------------------------------------------------
+--the imem is a ROM containing the 32bit wide instructions
+data<=imem(CONV_INTEGER(address));-- 'data' output will carry the 32b instuction from location specified by 'address'. 
+-------------------------------------------------------------------------------
 end Behavioral;
 
