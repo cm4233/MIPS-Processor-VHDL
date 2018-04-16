@@ -1,4 +1,5 @@
---VHDL Code for the entire MIPS Processor as a whole which integrates all the components--
+--This is not the top module, it is the integration of the processor's components into onle vhd file
+--VHDL Code for the entire MIPS Processor as a whole which integrates all the individual components--
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.STD_LOGIC_UNSIGNED.ALL;
@@ -8,10 +9,10 @@ entity MIPSProcessor is
 PORT (
 clk: in STD_LOGIC;
 clr: in STD_LOGIC;
-din: in STD_LOGIC_VECTOR(63 DOWNTO 0);
-ukey: in STD_LOGIC_VECTOR(127 DOWNTO 0);
-EorD: in STD_LOGIC;
-Reg1: out STD_LOGIC_VECTOR(31 DOWNTO 0);
+din: in STD_LOGIC_VECTOR(63 DOWNTO 0);--Accepts din from the fpga board for rc5 encypt/decrypt 
+ukey: in STD_LOGIC_VECTOR(127 DOWNTO 0);--Accepts ukey from fpga board for rc5
+EorD: in STD_LOGIC;--Encrypt or Decrypt signal
+Reg1: out STD_LOGIC_VECTOR(31 DOWNTO 0);--To show register content on 7seg display
 Reg2: out STD_LOGIC_VECTOR(31 DOWNTO 0)
 
 );
@@ -56,7 +57,7 @@ WD: in STD_LOGIC_VECTOR(31 DOWNTO 0);
 WE: in STD_LOGIC; 
 clk: in STD_LOGIC; 	   	
 RD: out STD_LOGIC_VECTOR(31 DOWNTO 0);
-----TRYING STUFF---
+----Test/debug signals---
 dmem_00h: out STD_LOGIC_VECTOR(31 DOWNTO 0);
 dmem_01h: out STD_LOGIC_VECTOR(31 DOWNTO 0);
 dmem_02h: out STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -100,7 +101,7 @@ WE3: in STD_LOGIC;
 clk: in STD_LOGIC;
 RD1: out STD_LOGIC_VECTOR(31 DOWNTO 0);
 RD2: out STD_LOGIC_VECTOR(31 DOWNTO 0);
----TRYING STUFF-----
+---Test/ Debug signals-----
 R0:out STD_LOGIC_VECTOR(31 DOWNTO 0);
 R1:out STD_LOGIC_VECTOR(31 DOWNTO 0);
 R2:out STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -166,6 +167,7 @@ signal PC00Signal : STD_LOGIC_VECTOR(31 downto 0):=x"00000000";
 signal PC01Signal : STD_LOGIC_VECTOR(31 downto 0):=x"00000000";
 signal PC10Signal : STD_LOGIC_VECTOR(31 downto 0):=x"00000000";
 
+----Additional signals from reg file for test/debug purpose---------
 signal R0: STD_LOGIC_VECTOR(31 DOWNTO 0);
 signal R1: STD_LOGIC_VECTOR(31 DOWNTO 0);
 signal R2: STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -189,8 +191,8 @@ signal R19: STD_LOGIC_VECTOR(31 DOWNTO 0);
 signal R20: STD_LOGIC_VECTOR(31 DOWNTO 0);
 signal R21: STD_LOGIC_VECTOR(31 DOWNTO 0);
 signal R22: STD_LOGIC_VECTOR(31 DOWNTO 0);
------------------------
 
+----Additional signals from dmem for test/debug purpose-------------------
 signal dmem_00h: STD_LOGIC_VECTOR(31 DOWNTO 0);
 signal dmem_01h: STD_LOGIC_VECTOR(31 DOWNTO 0);
 signal dmem_02h: STD_LOGIC_VECTOR(31 DOWNTO 0);
