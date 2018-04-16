@@ -1,5 +1,6 @@
----Assembly code to test the processor. The code enables the processor to perform RC5 encryption/decryption.
----This code is placed in the Instruction memory of the processor
+---Assembly code to test the processor. The code makes the processor perform RC5 encryption/decryption.
+---Before the code is placed in the Instruction memory of the processor, it is converted into machine code in
+---our processor's Instuction Set Architecture as shown below.
 -------------SKEY GEN--------------------------
 "00011100000110010000000000100010", --LW R25,34(R0) 
 "00100000000110010000000000011100", --SW R25,28(R0)
