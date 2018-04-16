@@ -100,14 +100,14 @@ WITH SrcB SELECT
 	x"00000000" WHEN OTHERS;
 -------------------------------------
 with ALUControl select--ALUControl signal comes from the CU depending on the current instruction
-ALUResult <= 	SrcA+SrcB when "000",
-					SrcA-SrcB when "001",
-					SrcA and SrcB when "010",
-					SrcA or SrcB when "011",
-					SrcA nor SrcB when "100",
-					shiftleft when "101",
-					shiftright when "110",
-					SrcA+SrcB when others;	
+ALUResult <= 		SrcA+SrcB when "000",
+			SrcA-SrcB when "001",
+			SrcA and SrcB when "010",
+			SrcA or SrcB when "011",
+			SrcA nor SrcB when "100",
+			shiftleft when "101",
+			shiftright when "110",
+			SrcA+SrcB when others;	
 
 with z select
 Zero <= 	'1' when x"00000000",
