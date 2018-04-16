@@ -17,7 +17,7 @@ end programcounter;
 architecture Behavioral of programcounter is
 begin
 ----------//code//---------
-PROCESS (clr, clk, EorD)  BEGIN
+PROCESS (clr, clk)  BEGIN
   IF (clr='0' and EorD='0') THEN dout <= x"00000000"; --start PC from here to start encryption for our test program inside IM
   ELSIF (clr='0' and EorD='1') THEN dout <= x"0000006E";-- PC start from here to do decryption for our test program inside the IM 
   ELSIF (clk'EVENT AND clk='1') THEN dout<=din;-- The ProgCounter here is just a flip flop whose output will go into the addr port 
