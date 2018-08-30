@@ -120,7 +120,7 @@ begin
 RD<=dmem(CONV_INTEGER(unsigned(A(5 downto 0))));
 process(clk)
 begin
-if (clk'EVENT AND clk='1') then
+if (clk'EVENT AND clk='0') then
 	if(WE='1')then
 	dmem(CONV_INTEGER(unsigned(A(4 downto 0))))<=WD;
 	end if;	
