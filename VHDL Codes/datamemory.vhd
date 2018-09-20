@@ -117,10 +117,11 @@ x"00000000"
 begin
 ---------//code//-------------------
 
-RD<=dmem(CONV_INTEGER(unsigned(A(5 downto 0))));
+
 process(clk)
 begin
 if (clk'EVENT AND clk='0') then
+	RD<=dmem(CONV_INTEGER(unsigned(A(5 downto 0))));
 	if(WE='1')then
 	dmem(CONV_INTEGER(unsigned(A(4 downto 0))))<=WD;
 	end if;	
